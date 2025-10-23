@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Untuk Kamu 💌</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #fff0f5;
+      color: #333;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .page { position: relative; z-index: 1; }
+    .screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: opacity 0.25s ease;
+    }
+    .hidden { display: none; }
+    .card, .menu-card, .message-card, .song-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .top-emoji { font-size: 48px; }
+    .lead { font-size: 18px; margin-bottom: 12px; }
+    .input-box { display:flex; align-items:center; justify-content:center; margin:12px 0; }
+    .lock { font-size: 24px; margin-right: 8px; }
+    .pin-display { font-size: 24px; letter-spacing: 6px; min-width: 140px; border-bottom: 2px solid #eee; min-height: 36px; }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin:16px 0; }
+    .key { padding:12px; font-size:18px; border:none; border-radius:10px; background:#ffe4e1; cursor:pointer; }
+    .key.special { background:#f8c8dc; }
+    .controls { display:flex; gap:8px; flex-direction:column; }
+    .btn-primary { background:#ff69b4; color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; }
+    .btn-outline { background:transparent; border:2px solid #ff69b4; color:#ff69b4; padding:8px 16px; border-radius:8px; cursor:pointer; }
+    .btn-ghost { background:transparent; border:none; color:#666; padding:8px 12px; cursor:pointer; }
+    .menu-list { display:flex; flex-direction:column; gap:12px; margin-top:16px; }
+    .menu-item { padding:12px; font-size:16px; border-radius:8px; background:#ffe4e1; border:none; cursor:pointer; }
+    .photo-placeholder { width:240px; height:140px; margin:12px auto; border-radius:24px; overflow:hidden; }
+    .photo-placeholder img { width:100%; height:100%; object-fit:cover; display:block; }
+    .envelope { width:120px; height:80px; background:url('https://cdn-icons-png.flaticon.com/512/561/561127.png') no-repeat center/contain; cursor:pointer; margin:20px auto; }
+    .paper { background:#fffafc; padding:18px; border-radius:12px; text-align:left; line-height:1.6; color:#333; }
+    .paper h2 { margin-top:0; text-align:center; }
+    .nav-row { margin-top:16px; display:flex; justify-content:center; gap:12px; }
+    .spotify-wrap { margin:14px 0; }
+    .popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:9999; }
+    .popup-card { background:white; padding:20px; border-radius:14px; max-width:320px; text-align:center; }
+    .popup-buttons { display:flex; gap:12px; justify-content:center; margin-top:12px; }
+    .heart { position:fixed; color:#ff69b4; font-size:16px; opacity:0.8; animation: floatUp 5s linear infinite; }
+    @keyframes floatUp {
+      0% { transform:translateY(0) scale(1); opacity:1; }
+      100% { transform:translateY(-100vh) scale(0.5); opacity:0; }
+    }
+    @media (max-width:600px){
+      .card { padding:16px; max-width:92%; }
+      .photo-placeholder { width:180px; height:110px; border-radius:18px; }
+      .pin-display { min-width:110px; }
+    }
+    .shake { animation: shakeAnim .35s; }
+    @keyframes shakeAnim { 0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)} }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- Password Screen -->
+    <section class="screen" id="password-screen">
+      <div class="card" id="pass-card">
+        <div class="top-emoji">💖</div>
+        <h3 class="lead">pov: mau kasih gift tapi gamau yang biasa² aja 💕</h3>
+        <div class="input-box">
+          <span class="lock">🔒</span>
+          <div id="display" class="pin-display"></div>
+        </div>
+        <div class="keypad">
+          <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+          <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+          <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+          <button class="key special">♡</button><button class="key">0</button><button class="key special">#</button>
+        </div>
+        <div class="controls">
+          <button id="clueBtn" class="btn-outline">Clue?</button>
+          <div style="display:flex; gap:8px; justify-content:center; margin-top:8px;">
+            <button id="clearBtn" class="btn-ghost">Clear</button>
+            <button id="enterBtn" class="btn-primary">Enter</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu Screen -->
+    <section class="screen hidden" id="menu-screen">
+      <div class="menu-card">
+        <h1 class="welcome">WELCOME SAYANGGGG!!</h1>
+        <div class="photo-placeholder"><img src="foto.jpeg" alt="Foto"></div>
+        <nav class="menu-list">
+          <button id="secretBtn" class="menu-item">Secret Message 💌</button>
+          <button id="songBtn" class="menu-item">Song for You 🎵</button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Secret Message Screen -->
+    <section class="screen hidden" id="secret-screen">
+      <div class="card envelope-stage">
+        <div id="envelope" class="envelope" title="Klik amplop untuk membuka"></div>
+        <h3 id="envelope-hint">KLIK AMPLOPNYA YA! 💌</h3>
+        <div class="nav-row">
+          <button class="btn-ghost" id="back-from-secret">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Message Screen -->
+    <section class="screen hidden" id="message-screen">
+      <div class="card message-card">
+        <div class="paper">
+          <h2>Untuk Kamu 🤍</h2>
+          <p>Allooo sayanggg 🤍</p>
+          <p>Guess who’s birthday today? Yap, orang yang akhir-akhir ini paling sering bikin aku senyum 😌</p>
+          <p>Happy birthday, SAYANGGGG🥳</p>
+          <p>YEAYYYY 21, TEPUK TANGAN DULUUUU SI PIAN SUDAH BUKAN BOCAH LAGIII HEHHHE</p>
+          <p>Di umur kamu yang sekarang, aku berdoa semoga semua hal baik pelan-pelan datang ke hidup kamu. Semoga kamu makin bijak, makin sabar, makin kuat, Mmakin ganteng, sehat selalu, panjang umur, dan rezekinya lancarrr aminn.</p>
+          <p>Maaaciww ya udah hadir dan tetap jadi kamu yang aku kenal, tetap jadi pian baik, lucu, dan selalu bisa bikin nyaman(ini khusus buat aku hehe) 💖</p>
+          <p>Aku bangga banget sama kamu, dan aku harap aku bisa terus ada buat ngeliat kamu tumbuh lebih hebat lagi. maap yaa kalo kata-katanya acak adul, gabisa ngerangkai kata-kata😢</p>
+          <p style="margin-top:12px;">Love you,<br>— e 🩷</p>
+        </div>
+        <div class="nav-row">
+          <button class="btn-ghost" id="back-to-envelope">Back ke amplop</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Song Screen -->
+    <section class="screen hidden" id="song-screen">
+      <div class="card song-card">
+        <h2>Song for You 🎵</h2>
+        <div class="spotify-wrap">
+          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5WOSNVChcadlsCRiqXE45K?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        <div class="spotify-wrap">
+          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/14IG2jW0gvjKIgfJHBc7c7?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        <div class="nav-row">
+          <button class="btn-outline" id="back-from-song">Back to menu</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <template id="popupTemplate">
+    <div class="popup-overlay" id="popupOverlay" style="display:flex;">
+      <div class="popup-card">
+        <h2>Kamu suka ga? 🥺💖</h2>
+        <div class="popup-buttons">
+          <button id="yesBtn" class="btn-primary">Ya 🩷</button>
+          <button id="noBtn" class="btn-outline">Enggak 😢</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    const pin = "2404";
+    const display = document.getElementById("display");
+    const keys = document.querySelectorAll(".key");
+    const enterBtn = document.getElementById("enterBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const clueBtn = document.getElementById("clueBtn");
+    const passwordScreen = document.getElementById("password-screen");
+    const menuScreen = document.getElementById("menu-screen");
+    const passCard = document.getElementById("pass-card");
+
+    let entered = "";
+
+    keys.forEach(k => k.addEventListener("click", ()=>{
+      const v = k.textContent.replace(/\\D/g,"");
+      if(!v)return;
+      if(entered.length<4){ entered+=v; display.textContent="•".repeat(entered.length); }
+    }));
+    clearBtn.onclick=()=>{entered="";display.textContent="";};
+    enterBtn.onclick=()=>{
+      if(entered===pin){
+        passwordScreen.classList.add("hidden");
+        menuScreen.classList.remove("hidden");
+      }else{
+        passCard.classList.add("shake");
+        setTimeout(()=>passCard.classList.remove("shake"),400);
+        alert("PIN salah 😝");
+      }
+      entered="";display.textContent="";
+    };
+    clueBtn.onclick=()=>alert("Clue: tanggal ulang tahun kamu 💖 (4 digit)");
+    document.getElementById("secretBtn").onclick=()=>{menuScreen.classList.add("hidden");document.getElementById("secret-screen").classList.remove("hidden");};
+    document.getElementById("songBtn").onclick=()=>{menuScreen.classList.add("hidden");document.getElementById("song-screen").classList.remove("hidden");};
+    document.getElementById("back-from-secret").onclick=()=>{document.getElementById("secret-screen").classList.add("hidden");menuScreen.classList.remove("hidden");};
+    document.getElementById("back-to-envelope").onclick=()=>{document.getElementById("message-screen").classList.add("hidden");document.getElementById("secret-screen").classList.remove("hidden");};
+    document.getElementById("envelope").onclick=()=>{document.getElementById("secret-screen").classList.add("hidden");document.getElementById("message-screen").classList.remove("hidden");};
+
+    document.getElementById("back-from-song").onclick=()=>{
+      document.getElementById("song-screen").classList.add("hidden");
+      const tpl=document.getElementById("popupTemplate");
+      const node=tpl.content.cloneNode(true);
+      document.body.appendChild(node);
+      const overlay=document.getElementById("popupOverlay");
+      document.getElementById("yesBtn").onclick=()=>{
+        overlay.querySelector(".popup-card").innerHTML="<h2>Yay!! 🥰 Aku seneng banget kamu suka 💕</h2>";
+        createBurstHearts(30);
+        setTimeout(()=>{overlay.remove();menuScreen.classList.remove("hidden");},2500);
+      };
+      document.getElementById("noBtn").onclick=()=>{
+        overlay.querySelector(".popup-card").innerHTML="<h2>Yahh 😭</h2><p style='color:#ff69b4;'>Tapi aku tetep sayang kamu kok 💖</p>";
+        setTimeout(()=>{overlay.remove();menuScreen.classList.remove("hidden");},2200);
+      };
+    };
+
+    function createBurstHearts(n){
+      for(let i=0;i<n;i++){
+        const h=document.createElement('div');
+        h.className='heart';
+        h.textContent='💖';
+        h.style.left=Math.random()*100+'%';
+        h.style.bottom='0';
+        h.style.fontSize=(16+Math.random()*20)+'px';
+        h.style.animationDuration=(5+Math.random()*5)+'s';
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),8000);
+      }
+    }
+
+    // Continuous floating hearts background
+    setInterval(()=>{
+      const h=document.createElement('div');
+      h.className='heart';
+      h.textContent='💗';
+      h.style.left=Math.random()*100+'%';
+      h.style.bottom='0';
+      h.style.fontSize=(12+Math.random()*24)+'px';
+      h.style.animationDuration=(5+Math.random()*5)+'s';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),8000);
+    },400);
+  </script>
+</body>
+</html>
